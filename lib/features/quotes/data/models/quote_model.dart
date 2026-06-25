@@ -5,8 +5,8 @@ class QuoteModel extends Quote {
 
   factory QuoteModel.fromJson(Map<String, dynamic> json) {
     return QuoteModel(
-      text: json['text'] as String? ?? json['content'] as String? ?? '',
-      author: json['author'] as String? ?? 'Unknown',
+      text: json['slip']['advice'] as String? ?? '',
+      author: 'Productivity Tips',
     );
   }
 }

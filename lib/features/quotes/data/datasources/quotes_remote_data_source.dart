@@ -10,9 +10,6 @@ class QuotesRemoteDataSource {
   Future<QuoteModel> getDailyQuote() async {
     final response = await dio.get('${AppConstants.externalApiBaseUrl}${AppConstants.quotesEndpoint}');
     if (response.statusCode == 200 && response.data != null) {
-      if (response.data is List && (response.data as List).isNotEmpty) {
-        return QuoteModel.fromJson(response.data[0] as Map<String, dynamic>);
-      }
       return QuoteModel.fromJson(response.data as Map<String, dynamic>);
     }
     throw DioException(

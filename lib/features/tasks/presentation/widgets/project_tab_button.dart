@@ -6,11 +6,11 @@ class ProjectTabButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const ProjectTabButton({
-    Key? key,
+    super.key,
     required this.title,
     required this.isSelected,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

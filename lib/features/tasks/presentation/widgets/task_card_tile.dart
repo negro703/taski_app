@@ -6,10 +6,10 @@ class TaskCardTile extends StatelessWidget {
   final ValueChanged<TaskStatus> onStatusChanged;
 
   const TaskCardTile({
-    Key? key,
+    super.key,
     required this.task,
     required this.onStatusChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

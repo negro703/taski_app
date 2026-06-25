@@ -111,9 +111,9 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
 
   String _mapFailureToMessage(Failure failure) {
     switch (failure.runtimeType) {
-      case ServerFailure:
+      case ServerFailure _:
         return "Server Failure";
-      case CacheFailure:
+      case CacheFailure _:
         return "Cache Failure";
       default:
         return "Unexpected error";

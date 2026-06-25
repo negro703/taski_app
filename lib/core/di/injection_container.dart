@@ -16,6 +16,11 @@ import '../../features/auth/domain/usecases/sign_in_with_email.dart';
 import '../../features/auth/domain/usecases/sign_out.dart';
 import '../../features/auth/domain/usecases/watch_auth_state.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../features/quotes/data/datasources/quotes_remote_data_source.dart';
+import '../../features/quotes/data/repositories/quotes_repository_impl.dart';
+import '../../features/quotes/domain/repositories/quotes_repository.dart';
+import '../../features/quotes/domain/usecases/get_daily_quote.dart';
+import '../../features/quotes/presentation/cubit/quotes_cubit.dart';
 import '../../features/tasks/data/datasources/tasks_local_data_source.dart';
 import '../../features/tasks/data/datasources/tasks_remote_data_source.dart';
 import '../../features/tasks/data/repositories/tasks_repository_impl.dart';
@@ -110,5 +115,18 @@ Future<void> initializeDependencies() async {
         deleteTask: sl<DeleteTask>(),
         updateTaskStatus: sl<UpdateTaskStatus>(),
       ),
+    )
+    // Quotes Feature
+    ..registerLazySingleton<QuotesRemoteDataSource>(
+      () => QuotesRemoteDataSource(dio: sl<Dio>()),
+    )
+    ..registerLazySingleton<QuotesRepository>(
+      () => QuotesRepositoryImpl(remoteDataSource: sl<QuotesRemoteDataSource>()),
+    )
+    ..registerLazySingleton<GetDailyQuote>(
+      () => GetDailyQuote(repository: sl<QuotesRepository>()),
+    )
+    ..registerFactory<QuotesCubit>(
+      () => QuotesCubit(getDailyQuote: sl<GetDailyQuote>()),
     );
 }

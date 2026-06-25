@@ -4,33 +4,12 @@ import 'package:taski/features/tasks/domain/entities/project.dart';
 
 @HiveType(typeId: 0)
 class ProjectModel extends Project {
-  @HiveField(0)
-  @override
-  final String id;
-
-  @HiveField(1)
-  @override
-  final String name;
-
-  @HiveField(2)
-  @override
-  final String createdBy;
-
-  @HiveField(3)
-  @override
-  final List<String> members;
-
   const ProjectModel({
-    required this.id,
-    required this.name,
-    required this.createdBy,
-    required this.members,
-  }) : super(
-          id: id,
-          name: name,
-          createdBy: createdBy,
-          members: members,
-        );
+    required super.id,
+    required super.name,
+    required super.createdBy,
+    required super.members,
+  });
 
   factory ProjectModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;

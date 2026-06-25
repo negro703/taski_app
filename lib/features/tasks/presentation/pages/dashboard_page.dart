@@ -4,6 +4,8 @@ import 'package:taski/core/common_widgets/shimmer_loading.dart';
 import 'package:taski/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:taski/features/auth/presentation/bloc/auth_event.dart';
 import 'package:taski/features/auth/presentation/bloc/auth_state.dart';
+import 'package:taski/features/quotes/presentation/cubit/quotes_cubit.dart';
+import 'package:taski/features/quotes/presentation/cubit/quotes_state.dart';
 import 'package:taski/features/tasks/domain/entities/project.dart';
 import 'package:taski/features/tasks/presentation/bloc/tasks_bloc.dart';
 import 'package:taski/features/tasks/presentation/bloc/tasks_event.dart';
@@ -23,6 +25,7 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     super.initState();
     context.read<TasksBloc>().add(GetProjectsEvent());
+    context.read<QuotesCubit>().fetchDailyQuote();
   }
 
   void _showAddProjectSheet() {
@@ -221,41 +224,19 @@ class _DashboardPageState extends State<DashboardPage> {
         child: ShimmerLoadingSkeleton(),
       );
     } else if (state is ProjectsLoaded) {
-      if (state.projects.isEmpty) {
-        return Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.folder_open_rounded,
-                  size: 64, color: Color(0xFFE2E8F0)),
-              const SizedBox(height: 16),
-              const Text(
-                'No projects yet',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF94A3B8),
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Create your first project to get started',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Color(0xFFCBD5E1),
-                ),
-              ),
-              const SizedBox(height: 24),
-              FilledButton.tonalIcon(
-                onPressed: _showAddProjectSheet,
-                icon: const Icon(Icons.add_rounded),
-                label: const Text('Create Project'),
-              ),
-            ],
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Premium Quote Banner
+          _buildQuoteBanner(),
+          const SizedBox(height: 12),
+          Expanded(
+            child: state.projects.isEmpty
+                ? _buildEmptyState()
+                : _buildAllProjectsView(state.projects),
           ),
-        );
-      }
-      return _buildAllProjectsView(state.projects);
+        ],
+      );
     } else if (state is ProjectsError) {
       return Center(
         child: Padding(
@@ -286,6 +267,124 @@ class _DashboardPageState extends State<DashboardPage> {
       );
     }
     return const SizedBox.shrink();
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.folder_open_rounded,
+              size: 64, color: Color(0xFFE2E8F0)),
+          const SizedBox(height: 16),
+          const Text(
+            'No projects yet',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF94A3B8),
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Create your first project to get started',
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFFCBD5E1),
+            ),
+          ),
+          const SizedBox(height: 24),
+          FilledButton.tonalIcon(
+            onPressed: _showAddProjectSheet,
+            icon: const Icon(Icons.add_rounded),
+            label: const Text('Create Project'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuoteBanner() {
+    return BlocBuilder<QuotesCubit, QuotesState>(
+      builder: (context, state) {
+        return switch (state) {
+          QuotesLoading() => const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: SizedBox(
+                height: 40,
+                child: Center(
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Color(0xFF6366F1),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          QuotesLoaded(quote: final quote) => Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEEF2FF),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: const Color(0xFFC7D2FE),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF6366F1).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.lightbulb_outline_rounded,
+                      color: Color(0xFF6366F1),
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          quote.text,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF1E293B),
+                            height: 1.4,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          '— ${quote.author}',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF6366F1),
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          QuotesError(message: final _) => const SizedBox.shrink(),
+          _ => const SizedBox.shrink(),
+        };
+      },
+    );
   }
 
   /// Elegant list of all project cards with navigation and delete.

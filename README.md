@@ -13,12 +13,12 @@ A production-ready task management application built with **Flutter** and **Fire
 ### Authentication & Setup
 | Login / Google Auth | Workspace Creation |
 | :---: | :---: |
-| <img src="login.jpeg" width="250"> | <img src="register.jpeg" width="250"> |
+| <img src="screenshots/login.jpeg" width="250"> | <img src="screenshots/register.jpeg" width="250"> |
 
 ### Task Management Flow
 | Main Dashboard | Daily Tasks List | Status Update |
 | :---: | :---: | :---: |
-| <img src="dashboard.jpeg" width="250"> | <img src="tasks.jpeg" width="250"> | <img src="status.jpeg" width="250"> |
+| <img src="screenshots/dashboard.jpeg" width="250"> | <img src="screenshots/tasks.jpeg" width="250"> | <img src="screenshots/status.jpeg" width="250"> |
 
 ---
 

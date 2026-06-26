@@ -46,6 +46,7 @@ dependencies:
   hive_flutter: ^1.1.0
   logger: ^2.6.2
   dartz: ^0.10.1
+  google_sign_in: 6.2.2
 
 dev_dependencies:
   flutter_test:

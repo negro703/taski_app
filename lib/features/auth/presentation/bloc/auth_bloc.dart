@@ -6,6 +6,7 @@ import '../../../../core/utils/usecases/usecase.dart';
 import '../../domain/entities/auth_user.dart';
 import '../../domain/usecases/register_with_email.dart';
 import '../../domain/usecases/sign_in_with_email.dart';
+import '../../domain/usecases/sign_in_with_google.dart';
 import '../../domain/usecases/sign_out.dart';
 import '../../domain/usecases/watch_auth_state.dart';
 import 'auth_event.dart';
@@ -16,17 +17,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.watchAuthState,
     required this.signInWithEmail,
     required this.registerWithEmail,
+    required this.signInWithGoogle,
     required this.signOut,
   }) : super(const AuthState()) {
     on<AuthSubscriptionRequested>(_onSubscriptionRequested);
     on<AuthSignInSubmitted>(_onSignInSubmitted);
     on<AuthRegisterSubmitted>(_onRegisterSubmitted);
+    on<AuthSignInWithGoogle>(_onSignInWithGoogle);
     on<AuthSignOutRequested>(_onSignOutRequested);
   }
 
   final WatchAuthState watchAuthState;
   final SignInWithEmail signInWithEmail;
   final RegisterWithEmail registerWithEmail;
+  final SignInWithGoogle signInWithGoogle;
   final SignOut signOut;
 
   Future<void> _onSubscriptionRequested(
@@ -100,6 +104,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           password: event.password,
         ),
       );
+    } catch (error) {
+      emit(
+        state.copyWith(
+          status: AuthStatus.failure,
+          errorMessage: error.toString(),
+        ),
+      );
+    }
+  }
+
+  Future<void> _onSignInWithGoogle(
+    AuthSignInWithGoogle event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(state.copyWith(status: AuthStatus.loading, clearError: true));
+
+    try {
+      await signInWithGoogle(const NoParams());
     } catch (error) {
       emit(
         state.copyWith(

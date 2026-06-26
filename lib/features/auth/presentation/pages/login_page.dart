@@ -128,7 +128,11 @@ class _LoginPageState extends State<LoginPage> {
                       SocialAuthButton(
                         label: 'Continue with Google',
                         icon: const Icon(Icons.g_mobiledata),
-                        onPressed: null,
+                        onPressed: state.isLoading
+                            ? null
+                            : () => context
+                                .read<AuthBloc>()
+                                .add(const AuthSignInWithGoogle()),
                       ),
                       const SizedBox(height: 24),
                       TextButton(

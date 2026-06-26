@@ -52,6 +52,7 @@ class _AddTaskModalContentState extends State<AddTaskModalContent> {
           dueDate: DateTime.now().add(const Duration(days: 7)),
           assignedTo: '',
           createdAt: DateTime.now(),
+          userId: '',
         ),
       ),
     );

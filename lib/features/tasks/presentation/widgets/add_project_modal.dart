@@ -41,6 +41,7 @@ class _AddProjectModalContentState extends State<AddProjectModalContent> {
           name: name,
           createdBy: '',
           members: [],
+          userId: '',
         ),
       ),
     );

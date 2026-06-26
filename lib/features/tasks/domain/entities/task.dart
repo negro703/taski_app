@@ -11,6 +11,7 @@ class Task extends Equatable {
   final DateTime dueDate;
   final String assignedTo;
   final DateTime createdAt;
+  final String userId;
 
   const Task({
     required this.id,
@@ -21,9 +22,10 @@ class Task extends Equatable {
     required this.dueDate,
     required this.assignedTo,
     required this.createdAt,
+    required this.userId,
   });
 
   @override
   List<Object?> get props =>
-      [id, projectId, title, description, status, dueDate, assignedTo, createdAt];
+      [id, projectId, title, description, status, dueDate, assignedTo, createdAt, userId];
 }

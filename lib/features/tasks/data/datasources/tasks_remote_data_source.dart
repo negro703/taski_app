@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:taski/features/tasks/data/models/project_model.dart';
 import 'package:taski/features/tasks/data/models/task_model.dart';
 import 'package:taski/features/tasks/domain/entities/task.dart';
@@ -8,9 +9,19 @@ class TasksRemoteDataSource {
 
   TasksRemoteDataSource({required this.firestore});
 
-  /// Projects stream
+  String? get _currentUserId => FirebaseAuth.instance.currentUser?.uid;
+
+  /// Projects stream filtered by current user
   Stream<List<ProjectModel>> getProjects() {
-    return firestore.collection('projects').snapshots().map(
+    final userId = _currentUserId;
+    if (userId == null) {
+      return const Stream.empty();
+    }
+    return firestore
+        .collection('projects')
+        .where('userId', isEqualTo: userId)
+        .snapshots()
+        .map(
           (snapshot) => snapshot.docs
               .map((doc) => ProjectModel.fromFirestore(doc))
               .toList(),
@@ -28,11 +39,16 @@ class TasksRemoteDataSource {
     await firestore.collection('projects').doc(projectId).delete();
   }
 
-  /// Tasks stream for a given project
+  /// Tasks stream for a given project, filtered by current user
   Stream<List<TaskModel>> getTasks(String projectId) {
+    final userId = _currentUserId;
+    if (userId == null) {
+      return const Stream.empty();
+    }
     return firestore
         .collection('tasks')
         .where('projectId', isEqualTo: projectId)
+        .where('userId', isEqualTo: userId)
         .snapshots()
         .map(
           (snapshot) => snapshot.docs

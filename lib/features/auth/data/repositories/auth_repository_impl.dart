@@ -44,6 +44,13 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<AuthUser> signInWithGoogle() {
+    return _guardFirebaseCall(
+      () => _remoteDataSource.signInWithGoogle(),
+    );
+  }
+
+  @override
   Future<void> signOut() {
     return _guardFirebaseCall(_remoteDataSource.signOut);
   }

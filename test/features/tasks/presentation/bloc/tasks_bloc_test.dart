@@ -70,12 +70,14 @@ void main() {
       name: 'Project 1',
       createdBy: 'user1',
       members: ['user1'],
+      userId: 'uid1',
     );
     const tProject2 = Project(
       id: '2',
       name: 'Project 2',
       createdBy: 'user1',
       members: ['user1'],
+      userId: 'uid1',
     );
     final tProjects = [tProject1, tProject2];
 
@@ -141,6 +143,7 @@ void main() {
       dueDate: DateTime(2026, 6, 25),
       assignedTo: 'user1',
       createdAt: DateTime(2026, 6, 25),
+      userId: 'uid1',
     );
     final tTask2 = Task(
       id: '2',
@@ -151,6 +154,7 @@ void main() {
       dueDate: DateTime(2026, 6, 25),
       assignedTo: 'user1',
       createdAt: DateTime(2026, 6, 25),
+      userId: 'uid1',
     );
     final tTasks = [tTask1, tTask2];
 

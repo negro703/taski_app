@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart' as dartz;
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:taski/core/errors/failures.dart';
 import 'package:taski/features/tasks/data/datasources/tasks_local_data_source.dart';
 import 'package:taski/features/tasks/data/datasources/tasks_remote_data_source.dart';
@@ -16,6 +17,8 @@ class TasksRepositoryImpl implements TasksRepository {
     required this.remoteDataSource,
     required this.localDataSource,
   });
+
+  String? get _currentUserId => FirebaseAuth.instance.currentUser?.uid;
 
   @override
   Stream<dartz.Either<Failure, List<Project>>> getProjects() async* {
@@ -52,11 +55,13 @@ class TasksRepositoryImpl implements TasksRepository {
   @override
   Future<dartz.Either<Failure, Project>> createProject(Project project) async {
     try {
+      final userId = _currentUserId ?? '';
       final projectModel = ProjectModel(
         id: project.id,
         name: project.name,
         createdBy: project.createdBy,
         members: project.members,
+        userId: userId,
       );
       final newId = await remoteDataSource.createProject(projectModel);
       final createdModel = ProjectModel(
@@ -64,6 +69,7 @@ class TasksRepositoryImpl implements TasksRepository {
         name: project.name,
         createdBy: project.createdBy,
         members: project.members,
+        userId: userId,
       );
       // Cache locally after remote creation
       try {
@@ -125,6 +131,7 @@ class TasksRepositoryImpl implements TasksRepository {
   @override
   Future<dartz.Either<Failure, Task>> createTask(Task task) async {
     try {
+      final userId = _currentUserId ?? '';
       final taskModel = TaskModel(
         id: task.id,
         projectId: task.projectId,
@@ -134,6 +141,7 @@ class TasksRepositoryImpl implements TasksRepository {
         dueDate: task.dueDate,
         assignedTo: task.assignedTo,
         createdAt: task.createdAt,
+        userId: userId,
       );
       // Write to remote first - Firestore generates the ID
       final newId = await remoteDataSource.createTask(taskModel);
@@ -147,6 +155,7 @@ class TasksRepositoryImpl implements TasksRepository {
         dueDate: task.dueDate,
         assignedTo: task.assignedTo,
         createdAt: task.createdAt,
+        userId: userId,
       );
       // Immediately cache locally so the UI has it
       try {

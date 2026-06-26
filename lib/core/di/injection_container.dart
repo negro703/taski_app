@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logger/logger.dart';
 import '../../features/tasks/data/models/project_model.dart';
@@ -13,6 +14,7 @@ import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/repository_interfaces/auth_repository.dart';
 import '../../features/auth/domain/usecases/register_with_email.dart';
 import '../../features/auth/domain/usecases/sign_in_with_email.dart';
+import '../../features/auth/domain/usecases/sign_in_with_google.dart';
 import '../../features/auth/domain/usecases/sign_out.dart';
 import '../../features/auth/domain/usecases/watch_auth_state.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
@@ -41,7 +43,7 @@ final sl = GetIt.instance;
 Future<void> initializeDependencies() async {
   await Firebase.initializeApp();
   await Hive.initFlutter();
-  
+
   Hive.registerAdapter(ProjectModelAdapter());
   Hive.registerAdapter(TaskModelAdapter());
 
@@ -58,10 +60,12 @@ Future<void> initializeDependencies() async {
     ..registerLazySingleton<DioClient>(() => DioClient(instance: sl<Dio>()))
     ..registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance)
     ..registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance)
+    ..registerLazySingleton<GoogleSignIn>(() => GoogleSignIn())
     ..registerLazySingleton<AuthRemoteDataSource>(
       () => FirebaseAuthRemoteDataSource(
         firebaseAuth: sl<FirebaseAuth>(),
         firestore: sl<FirebaseFirestore>(),
+        googleSignIn: sl<GoogleSignIn>(),
       ),
     )
     ..registerLazySingleton<AuthRepository>(
@@ -76,12 +80,16 @@ Future<void> initializeDependencies() async {
     ..registerLazySingleton<RegisterWithEmail>(
       () => RegisterWithEmail(sl<AuthRepository>()),
     )
+    ..registerLazySingleton<SignInWithGoogle>(
+      () => SignInWithGoogle(sl<AuthRepository>()),
+    )
     ..registerLazySingleton<SignOut>(() => SignOut(sl<AuthRepository>()))
     ..registerFactory<AuthBloc>(
       () => AuthBloc(
         watchAuthState: sl<WatchAuthState>(),
         signInWithEmail: sl<SignInWithEmail>(),
         registerWithEmail: sl<RegisterWithEmail>(),
+        signInWithGoogle: sl<SignInWithGoogle>(),
         signOut: sl<SignOut>(),
       ),
     )

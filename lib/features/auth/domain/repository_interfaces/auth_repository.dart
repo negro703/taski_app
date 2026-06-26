@@ -14,5 +14,7 @@ abstract interface class AuthRepository {
     required String displayName,
   });
 
+  Future<AuthUser> signInWithGoogle();
+
   Future<void> signOut();
 }

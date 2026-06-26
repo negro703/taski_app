@@ -13,6 +13,7 @@ class TaskModel extends Task {
     required super.dueDate,
     required super.assignedTo,
     required super.createdAt,
+    required super.userId,
   });
 
   factory TaskModel.fromFirestore(DocumentSnapshot doc) {
@@ -33,6 +34,7 @@ class TaskModel extends Task {
       createdAt: (data["createdAt"] is Timestamp)
           ? (data["createdAt"] as Timestamp).toDate()
           : (data["createdAt"] != null ? DateTime.parse(data["createdAt"]) : DateTime.now()),
+      userId: data["userId"] ?? '',
     );
   }
 
@@ -45,6 +47,7 @@ class TaskModel extends Task {
       "dueDate": Timestamp.fromDate(dueDate),
       "assignedTo": assignedTo,
       "createdAt": Timestamp.fromDate(createdAt),
+      "userId": userId,
     };
   }
 }
@@ -68,13 +71,14 @@ class TaskModelAdapter extends TypeAdapter<TaskModel> {
       dueDate: DateTime.fromMillisecondsSinceEpoch(fields[5] as int),
       assignedTo: fields[6] as String,
       createdAt: fields.containsKey(7) ? DateTime.fromMillisecondsSinceEpoch(fields[7] as int) : DateTime.now(),
+      userId: fields.containsKey(8) ? fields[8] as String : '',
     );
   }
 
   @override
   void write(BinaryWriter writer, TaskModel obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -90,6 +94,8 @@ class TaskModelAdapter extends TypeAdapter<TaskModel> {
       ..writeByte(6)
       ..write(obj.assignedTo)
       ..writeByte(7)
-      ..write(obj.createdAt.millisecondsSinceEpoch);
+      ..write(obj.createdAt.millisecondsSinceEpoch)
+      ..writeByte(8)
+      ..write(obj.userId);
   }
 }

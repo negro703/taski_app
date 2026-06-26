@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../models/auth_user_model.dart';
 
@@ -17,6 +18,8 @@ abstract interface class AuthRemoteDataSource {
     required String displayName,
   });
 
+  Future<AuthUserModel> signInWithGoogle();
+
   Future<void> signOut();
 }
 
@@ -24,10 +27,12 @@ class FirebaseAuthRemoteDataSource implements AuthRemoteDataSource {
   FirebaseAuthRemoteDataSource({
     required this.firebaseAuth,
     required this.firestore,
+    required this.googleSignIn,
   });
 
   final FirebaseAuth firebaseAuth;
   final FirebaseFirestore firestore;
+  final GoogleSignIn googleSignIn;
 
   @override
   Stream<AuthUserModel?> authStateChanges() {
@@ -92,6 +97,43 @@ class FirebaseAuthRemoteDataSource implements AuthRemoteDataSource {
     await user.reload();
     final refreshedUser = firebaseAuth.currentUser ?? user;
     return AuthUserModel.fromFirebaseUser(refreshedUser);
+  }
+
+  @override
+  Future<AuthUserModel> signInWithGoogle() async {
+    final googleUser = await googleSignIn.signIn();
+    if (googleUser == null) {
+      throw FirebaseAuthException(
+        code: 'canceled',
+        message: 'Google Sign-In was canceled.',
+      );
+    }
+
+    final googleAuth = await googleUser.authentication;
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    final authResult = await firebaseAuth.signInWithCredential(credential);
+    final user = authResult.user;
+    if (user == null) {
+      throw FirebaseAuthException(
+        code: 'missing-user',
+        message: 'Google Sign-In completed without a user profile.',
+      );
+    }
+
+    // Ensure Firestore user document exists
+    await firestore.collection('users').doc(user.uid).set({
+      'email': user.email,
+      'displayName': user.displayName,
+      'photoUrl': user.photoURL,
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+
+    return AuthUserModel.fromFirebaseUser(user);
   }
 
   @override

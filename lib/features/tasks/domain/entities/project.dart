@@ -5,14 +5,16 @@ class Project extends Equatable {
   final String name;
   final String createdBy;
   final List<String> members;
+  final String userId;
 
   const Project({
     required this.id,
     required this.name,
     required this.createdBy,
     required this.members,
+    required this.userId,
   });
 
   @override
-  List<Object?> get props => [id, name, createdBy, members];
+  List<Object?> get props => [id, name, createdBy, members, userId];
 }

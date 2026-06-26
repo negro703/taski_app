@@ -9,6 +9,7 @@ class ProjectModel extends Project {
     required super.name,
     required super.createdBy,
     required super.members,
+    required super.userId,
   });
 
   factory ProjectModel.fromFirestore(DocumentSnapshot doc) {
@@ -18,6 +19,7 @@ class ProjectModel extends Project {
       name: data["name"] ?? '',
       createdBy: data["createdBy"] ?? '',
       members: List<String>.from(data["members"] ?? []),
+      userId: data["userId"] ?? '',
     );
   }
 
@@ -26,6 +28,7 @@ class ProjectModel extends Project {
       "name": name,
       "createdBy": createdBy,
       "members": members,
+      "userId": userId,
     };
   }
 }
@@ -45,13 +48,14 @@ class ProjectModelAdapter extends TypeAdapter<ProjectModel> {
       name: fields[1] as String,
       createdBy: fields[2] as String,
       members: (fields[3] as List).cast<String>(),
+      userId: fields[4] as String? ?? '',
     );
   }
 
   @override
   void write(BinaryWriter writer, ProjectModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -59,6 +63,8 @@ class ProjectModelAdapter extends TypeAdapter<ProjectModel> {
       ..writeByte(2)
       ..write(obj.createdBy)
       ..writeByte(3)
-      ..write(obj.members);
+      ..write(obj.members)
+      ..writeByte(4)
+      ..write(obj.userId);
   }
 }

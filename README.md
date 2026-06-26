@@ -7,17 +7,18 @@ A production-ready task management application built with **Flutter** and **Fire
 
 ---
 
+
 ## 📸 Application Glimpse
 
 ### Authentication & Setup
 | Login / Google Auth | Workspace Creation |
 | :---: | :---: |
-| <img src="WhatsApp Image 2026-06-26 at 8.26.21 AM.jpeg" width="250"> | <img src="WhatsApp Image 2026-06-26 at 8.26.22 AM.jpeg" width="250"> |
+| <img src="login.jpeg" width="250"> | <img src="register.jpeg" width="250"> |
 
 ### Task Management Flow
 | Main Dashboard | Daily Tasks List | Status Update |
 | :---: | :---: | :---: |
-| <img src="WhatsApp Image 2026-06-26 at 8.26.43 AM.jpeg" width="250"> | <img src="WhatsApp Image 2026-06-26 at 8.26.25 AM.jpeg" width="250"> | <img src="WhatsApp Image 2026-06-26 at 8.26.24 AM.jpeg" width="250"> |
+| <img src="dashboard.jpeg" width="250"> | <img src="tasks.jpeg" width="250"> | <img src="status.jpeg" width="250"> |
 
 ---
 

@@ -34,9 +34,4 @@ This app serves as a practical implementation of advanced software engineering c
 
 ---
 
-## 🚀 How to Run
-
-1. Clone the repository:
-   ```bash
-   git clone [https://github.com/negro703/taski_app.git](https://github.com/negro703/taski_app.git)
 
